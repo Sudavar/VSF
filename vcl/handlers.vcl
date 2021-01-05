@@ -13,11 +13,11 @@
 
 sub sec_default_handler {
     # swap this one with your handler (see below)
-    call sec_reject;
+    //call sec_reject;
 
-    #call sec_passthru;  #      do nothing but log the rule and deliver the request
+    call sec_passthru;  #      do nothing but log the rule and deliver the request
     #call sec_general;   # 800  # debug handler - delivers X-VSF-Rule to client
-    #call sec_reject;    # 801  # 403 reject with message
+    #//call sec_reject;    # 801  # 403 reject with message
     #call sec_redirect;  # 802  # 302 redirect
     #call sec_honeypot;  # 803  # restart request with honeypot backend
     #call sec_synthtml;  # 804  # synthesize a response
@@ -27,8 +27,8 @@ sub sec_default_handler {
 
 # Here you can specify what gets logged when a rule triggers.
 sub sec_log {
-    std.log("security.vcl alert xid:" + req.xid + " " + req.proto
-        + " [" + req.http.X-VSF-Module + "-" + req.http.X-VSF-RuleID + "]"
+    std.syslog(169, "security.vcl alert pressidum-rid:" + req.http.Pressidium-RID + " " + req.proto
+        + " [" + req.http.X-VSF-Module + "-" + req.http.X-VSF-RuleID + "] "
         + req.http.X-VSF-Client
         + " (" +  req.http.X-VSF-RuleName + ") ");
     #std.syslog(6, "<VSF> " + std.time2real(now, 1.0) + " [" + req.http.X-VSF-RuleName + "/ruleid:" + req.http.X-VSF-RuleID + "]: " + req.http.X-VSF-ClientIP + " - " + req.http.X-VSF-Method + " http://" + req.http.X-VSF-URL + " " + req.http.X-VSF-Proto + " - " + req.http.X-VSF-UA);
@@ -59,5 +59,3 @@ sub sec_myhandler {
 
     return (synth(805, "Drop"));
 }
-
-

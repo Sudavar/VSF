@@ -25,6 +25,14 @@ include "security/rules/content-encoding.vcl";
 include "security/rules/content-type.vcl";
 include "security/rules/localfiles.vcl";
 
+# Pressidium custom rules
+include "security/rules/pressidium/log-failed-wp-logins.vcl";
+include "security/rules/pressidium/known-vulnerabilities.vcl";
+include "security/rules/pressidium/bash-injection.vcl";
+include "security/rules/pressidium/banned-ua.vcl";
+include "security/rules/pressidium/post-requests.vcl";
+# removed the .com from restricted file extesions
+
 # you may or may not want the following security/rulesets:
 
 # DoS connection throttling
@@ -44,4 +52,3 @@ include "security/rules/localfiles.vcl";
 
 ## The breach2vcl tool is not perfect...
 # include "security/breach.vcl";
-

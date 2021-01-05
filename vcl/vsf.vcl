@@ -3,7 +3,7 @@ vcl 4.0;
 /* VSF main VCL file
  * XXX: Paths are hardcoded, otherwise they don't resolve. sorry.
  */
-import std;
+//import std;
 import vsf;
 
 # clear all internal variables
@@ -31,14 +31,21 @@ sub vcl_recv {
         set req.backend_hint = sec_honey;
         return (pass);
     }
-    set req.http.X-VSF-Actual-IP = regsub(req.http.X-Forwarded-For, "[, ].*$", "");
-    set req.http.X-VSF-ClientIP = client.ip;
+    # set req.http.X-VSF-Actual-IP = regsub(req.http.X-Forwarded-For, "[, ].*$", "");
+    # set req.http.X-VSF-ClientIP = req.http.Pressidium-Client-IP;
+    # Presty provides us with two headers: req.http.Pressidium-Client-IP for the client IP
+    # and req.http.Pressidium-Connecting-IP for the IP that connects to Presty for the request
+    if ( req.http.Pressidium-Client-IP == req.http.Pressidium-Connecting-IP ) {
+        set req.http.Pressidium-Proxied = "not-proxied";
+    } else {
+        set req.http.Pressidium-Proxied = "proxied";
+    }
     set req.http.X-VSF-Method = req.method;
     set req.http.X-VSF-Proto = req.proto;
     set req.http.X-VSF-UA = req.http.user-agent;
     #STABLE | COMPAT | COMPOSE | IGNORE | NLF2LF | LUMP | STRIPMARK
     set req.http.X-VSF-URL = vsf.normalize(vsf.urldecode(req.url));
-    set req.http.X-VSF-Body = vsf.normalize(vsf.body(512KB));
+    //set req.http.X-VSF-Body = vsf.normalize(vsf.body(512KB));
     if (req.url ~ "(i)^/[^?]+\.(css|js|jp(e)?g|ico|png|gif|txt|gz(ip)?|zip|rar|iso|lzma|bz(2)?|t(ar\.)?gz|t(ar\.)?bz)(\?.*)?$") {
         set req.http.X-VSF-Static = "y";
     }
@@ -46,7 +53,9 @@ sub vcl_recv {
     # gather info about client
     # this is one of the vars guaranteed to be present
     # if and only if your request is inside security.vcl
-    set req.http.X-VSF-Client = "[" +  client.ip + "] "
+    set req.http.X-VSF-Client = "[" + req.http.Pressidium-Connecting-IP + "]"
+        + " (" + req.http.Pressidium-Proxied + ")"
+        + " [" + req.http.X-Forwarded-For + "] "
         + req.http.host + req.url
         + " (" + req.http.user-agent + ")";
 }
