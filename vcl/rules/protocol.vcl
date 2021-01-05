@@ -1,7 +1,9 @@
 sub vcl_recv {
+    # Pressidium: Added OPTIONS method
     # Allowed methods
     if (req.method != "GET" && req.method != "HEAD" && req.method != "PUT" &&
-        req.method != "POST" && req.method != "DELETE" && req.method != "PURGE") {
+        req.method != "POST" && req.method != "DELETE" && req.method != "PURGE" &&
+        req.method != "OPTIONS" ) {
         set req.http.X-VSF-RuleName = "Method Not Allowed";
         set req.http.X-VSF-RuleID = "protocol.method-1";
         call sec_handler;

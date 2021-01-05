@@ -129,11 +129,15 @@ sub vcl_recv {
         call sec_php_sev1;
     }
 
-    # Generic check for remote code inclusion from external sites
-    if (req.url ~ "=?(https?|ftps?|php)://") {
+    # Generic check for PHP file inclusion from external sites
+    # Pressidium: check for PHP file inclusions instead of just URLs
+    # we had a lof of false positives for URLS like the following
+    # elearningindustry.com/login?service=linkedin&action=sign-in&return=https://elearningindustry.com/directory/elearning-companies/gracewright-productions
+    #if (req.url ~ "=?(https?|ftps?|php)://") {
+    if (req.url ~ "=?(https?|ftps?|php)://.*\.php") {
         set req.http.X-VSF-RuleName = "Remote site in URL parameter";
         set req.http.X-VSF-RuleID = "100";
-        set req.http.X-VSF-RuleInfo = "Generic check for remote code inclusion from external sites";
+        set req.http.X-VSF-RuleInfo = "Generic check for PHP file inclusion from external sites";
         call sec_php_sev1;
     }
 }
