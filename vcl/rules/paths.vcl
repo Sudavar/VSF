@@ -1,7 +1,7 @@
 sub vcl_recv {
     # Directory traversal
-    if (req.url ~ "(?i)((/|\\)\.{2}|\.{2}(/|\\))") {
-        set req.http.X-VSF-RuleName = "Directory Traversal";
+    if (req.url ~ "(?i)((\/|\\)\.{2}|\.{2}(\/|\\)).*(wp\-config|passwd|hosts|shadow|configuration\.php|config_update\.php|\.conf|e\*c\/p\*d)") {
+        set req.http.X-VSF-RuleName = "WordPress and Server sensitive files";
         set req.http.X-VSF-RuleID = "path.travers-1";
         call sec_handler;
     }
