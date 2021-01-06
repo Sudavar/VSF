@@ -61,12 +61,13 @@ sub vcl_recv {
     }
 
     # Checks if someone tries to inject a common command name in URL
-    if (req.url ~ "(=|;|&&)(whoami|who|uptime|last|df).*") {
-        set req.http.X-VSF-RuleName = "Unix command in url";
-        set req.http.X-VSF-RuleID = "7";
-        set req.http.X-VSF-RuleInfo = "Triggers on unix command in URL: whoami/who/uptime/last/df";
-        call sec_cmd_sev1;
-    }
+    # Too vauge rule, having a lot of false positives
+    # if (req.url ~ "(=|;|&&)(whoami|who|uptime|last|df).*") {
+    #    set req.http.X-VSF-RuleName = "Unix command in url";
+    #    set req.http.X-VSF-RuleID = "7";
+    #    set req.http.X-VSF-RuleInfo = "Triggers on unix command in URL: whoami/who/uptime/last/df";
+    #    call sec_cmd_sev1;
+    # }
 
     # Checks if someone tries to redirect output to /dev/null
     if (req.url ~ "(>|%3E|-o)+" && req.url ~ "/dev/null") {
