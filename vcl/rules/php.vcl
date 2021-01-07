@@ -122,7 +122,7 @@ sub vcl_recv {
     }
 
     # Generic check for PHP code inclusion in URL
-    if (req.url ~ "(<|\%3C)?\?(php)?.*(php)?\?(>|\%3E)?") {
+    if (req.url ~ "(<|\%3C).*\?(php)?.*(php)?\?(>|\%3E)?") {
         set req.http.X-VSF-RuleName = "PHP code inclusion in URL: <?php ..code.. ?>";
         set req.http.X-VSF-RuleID = "12";
         set req.http.X-VSF-RuleInfo = "Generic check for PHP code in URL: <?php ..code.. ?>";
