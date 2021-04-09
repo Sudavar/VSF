@@ -44,7 +44,7 @@ sub vcl_recv {
     }
 
     # Checks if someone tries to use SQL statement in URL: DELETE FROM
-    if (req.url ~ "(?i).+DELETE[^a-zA-Z0-9_-].+FROM[^a-zA-Z0-9_-]") {
+    if (req.url ~ "(?i).+DELETE[^a-zA-Z0-9_-].+[^_|&]FROM[^a-zA-Z0-9_-]") {
         set req.http.X-VSF-RuleName = "SQL Injection Attempt: DELETE FROM";
         set req.http.X-VSF-RuleID = "5";
         set req.http.X-VSF-RuleInfo = "Checks if someone tries to use SQL statement in URL: DELETE FROM";
